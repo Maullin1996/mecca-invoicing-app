@@ -1,0 +1,67 @@
+name: mecca
+description: "A new Flutter project."
+publish_to: 'none'
+version: 0.1.0
+
+environment:
+  sdk: ^3.10.8
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_image_compress: ^2.4.0
+  flutter_pdfview: ^1.4.4
+  image_picker: ^1.2.1
+  intl: ^0.20.2
+  path: ^1.9.1
+  path_provider: ^2.1.5
+  pdf: ^3.11.3
+  share_plus: ^12.0.1
+  sqflite: ^2.4.2
+
+dev_dependencies:
+  flutter_launcher_icons: ^0.14.4
+  flutter_lints: ^6.0.0
+  flutter_native_splash: ^2.4.7
+  flutter_test:
+    sdk: flutter
+  sqflite_common_ffi: ^2.3.2
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/images/mecca_icon.png"
+  
+  # Esto pone el fondo gris oscuro que pediste
+  adaptive_icon_background: "#1E1E1E"
+  
+  # Esto coloca tu imagen sobre el fondo gris
+  adaptive_icon_foreground: "assets/images/mecca_icon.png"
+  
+  # Reduce este valor para que el icono se vea más grande (menos margen)
+  # Un valor de 0 hará que ocupe el máximo espacio posible
+  adaptive_icon_foreground_inset: 20 
+
+
+flutter_native_splash:
+  color: "#121212"
+  image: assets/images/mecca_icon_splash_new.png
+  android: true
+  ios: true
+  android_12:
+    image: assets/images/mecca_icon_splash_new.png
+    color: "#121212"
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/images/remote-worker.png
+    - assets/images/factory.png
+    - assets/images/mecca_icon.png
+    - assets/images/mecca_icon_splash_new.png
+
+  fonts:
+    - family: Roboto
+      fonts:
+        - asset: assets/fonts/Roboto-VariableFont_wdth,wght.ttf
