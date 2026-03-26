@@ -4,24 +4,32 @@ class Company {
     required this.name,
     required this.minutesBalance,
     this.email,
+    this.address,
+    this.city,
   });
 
   final int? id;
   final String name;
   final int minutesBalance;
   final String? email;
+  final String? address;
+  final String? city;
 
   Company copyWith({
     int? id,
     String? name,
     int? minutesBalance,
     String? email,
+    String? address,
+    String? city,
   }) {
     return Company(
       id: id ?? this.id,
       name: name ?? this.name,
       email: email ?? this.email,
       minutesBalance: minutesBalance ?? this.minutesBalance,
+      address: address ?? this.address,
+      city: city ?? this.city,
     );
   }
 
@@ -30,6 +38,8 @@ class Company {
       'name': name,
       'minutes_balance': minutesBalance,
       'email': email,
+      'address': address,
+      'city': city,
     };
 
     if (id != null) {
@@ -45,6 +55,8 @@ class Company {
       name: map['name'] as String,
       email: map['email'] as String?,
       minutesBalance: map['minutes_balance'] as int,
+      address: map['address'] as String?,
+      city: map['city'] as String?,
     );
   }
 }

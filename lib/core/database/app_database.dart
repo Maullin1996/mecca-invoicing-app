@@ -45,7 +45,9 @@ class AppDatabase {
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT NOT NULL,
         email TEXT,
-        minutes_balance INTEGER NOT NULL
+        minutes_balance INTEGER NOT NULL,
+        address TEXT,
+        city TEXT
       )
     ''');
 

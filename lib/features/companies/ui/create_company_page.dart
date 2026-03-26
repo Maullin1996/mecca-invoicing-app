@@ -16,11 +16,15 @@ class _CreateCompanyPageState extends State<CreateCompanyPage> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _addressController = TextEditingController();
+  final TextEditingController _cityController = TextEditingController();
 
   @override
   void dispose() {
     _nameController.dispose();
     _emailController.dispose();
+    _addressController.dispose();
+    _cityController.dispose();
     super.dispose();
   }
 
@@ -33,6 +37,8 @@ class _CreateCompanyPageState extends State<CreateCompanyPage> {
       id: null,
       email: _emailController.text.trim(),
       name: _nameController.text.trim(),
+      address: _addressController.text.trim(),
+      city: _cityController.text.trim(),
       minutesBalance: 0,
     );
 
@@ -93,7 +99,7 @@ class _CreateCompanyPageState extends State<CreateCompanyPage> {
                       keyboardType: TextInputType.emailAddress,
                       validator: (value) {
                         if (value == null || value.trim().isEmpty) {
-                          return null; // es opcional
+                          return null;
                         }
 
                         final email = value.trim();
@@ -116,6 +122,36 @@ class _CreateCompanyPageState extends State<CreateCompanyPage> {
                           }
                         }
 
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 16),
+                    CustomTextformField(
+                      controller: _cityController,
+                      label: 'Ciudad (opcional)',
+                      validator: (value) {
+                        if (value == null || value.trim().isEmpty) {
+                          return null;
+                        }
+                        final city = value.trim();
+                        if (city.length < 2) {
+                          return 'La ciudad debe tener al menos 2 caracteres';
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 16),
+                    CustomTextformField(
+                      controller: _addressController,
+                      label: 'Dirección (opcional)',
+                      validator: (value) {
+                        if (value == null || value.trim().isEmpty) {
+                          return null;
+                        }
+                        final address = value.trim();
+                        if (address.length < 5) {
+                          return 'La dirección debe tener al menos 5 caracteres';
+                        }
                         return null;
                       },
                     ),

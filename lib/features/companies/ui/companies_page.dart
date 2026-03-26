@@ -151,9 +151,27 @@ class _CompaniesPageState extends State<CompaniesPage> {
                             fontSize: 24,
                           ),
                         ),
+                        const SizedBox(height: 8),
                         if (company.email != null && company.email!.isNotEmpty)
                           Text(
                             'Correo: ${company.email}',
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w400,
+                            ),
+                          ),
+                        if (company.city != null && company.city!.isNotEmpty)
+                          Text(
+                            'Ciudad: ${company.city}',
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w400,
+                            ),
+                          ),
+                        if (company.address != null &&
+                            company.address!.isNotEmpty)
+                          Text(
+                            'Dirección: ${company.address}',
                             style: TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.w400,
