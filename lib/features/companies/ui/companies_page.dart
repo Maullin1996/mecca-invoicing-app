@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:mecca/core/theme/app_colors.dart';
 import 'package:mecca/core/widgets/empty_screen_widget.dart';
 import 'package:mecca/core/widgets/error_message_widget.dart';
+import 'package:mecca/features/companies/domain/company.dart';
 import 'package:mecca/features/companies/ui/create_company_page.dart';
 import 'package:mecca/features/jobs/ui/jobs_page.dart';
 import 'package:mecca/features/jobs/ui/job_notifier.dart';
@@ -25,37 +26,68 @@ class _CompaniesPageState extends State<CompaniesPage> {
     widget.companyNotifier.loadCompanies();
   }
 
-  Future<bool> _confirmDeleteDraftJob() async {
-    final shouldDelete = await showDialog(
+  Future<bool> _showCompanyOptions(Company company) async {
+    final shouldDelete = await showDialog<bool>(
       context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: const Text(
-            'Eliminar Empresa',
-            style: TextStyle(fontWeight: FontWeight.bold),
-          ),
-          content: const Text(
-            'Tota la información contenida en esta empresa se perderá ¿Esta seguro que lo quiere eliminar?',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.w400),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(false),
-              child: const Text(
-                'Cancelar',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+      builder: (context) => AlertDialog(
+        title: const Text(
+          'Opciones',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
+        content: const Text(
+          'Toda la información de esta empresa se perderá si la eliminas. ¿Qué deseas hacer?',
+          style: TextStyle(fontSize: 16),
+        ),
+        actions: [
+          Column(
+            children: [
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () => Navigator.of(context).pop(false),
+                  child: const Text(
+                    'Cancelar',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                ),
               ),
-            ),
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(true),
-              child: const Text(
-                'Eliminar',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              const SizedBox(height: 8),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () {
+                    Navigator.of(context).pop(false); // cierra diálogo
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => CreateCompanyPage(
+                          companyNotifier: widget.companyNotifier,
+                          company: company, // ✅ directo, sin firstWhere
+                        ),
+                      ),
+                    );
+                  },
+                  child: const Text(
+                    'Editar',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                ),
               ),
-            ),
-          ],
-        );
-      },
+              const SizedBox(height: 8),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () => Navigator.of(context).pop(true),
+                  child: const Text(
+                    'Eliminar',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
     );
     return shouldDelete ?? false;
   }
@@ -96,16 +128,11 @@ class _CompaniesPageState extends State<CompaniesPage> {
                 final company = widget.companyNotifier.companies[index];
                 return GestureDetector(
                   onLongPress: () async {
-                    final shouldDelete = await _confirmDeleteDraftJob();
-                    if (!shouldDelete) {
-                      return;
-                    }
-
+                    final shouldDelete = await _showCompanyOptions(company);
+                    if (!shouldDelete) return;
                     await widget.companyNotifier.deleteCompany(company.id!);
 
-                    if (!mounted) {
-                      return;
-                    }
+                    if (!mounted) return;
                   },
                   onTap: () {
                     final jobNotifier = JobNotifier(companyId: company.id!);
@@ -132,7 +159,15 @@ class _CompaniesPageState extends State<CompaniesPage> {
                     Clipboard.setData(ClipboardData(text: company.email!));
 
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Correo copiado')),
+                      const SnackBar(
+                        content: Text(
+                          'Correo copiado',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w400,
+                          ),
+                        ),
+                      ),
                     );
                   },
                   child: Container(

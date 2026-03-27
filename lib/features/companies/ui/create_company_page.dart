@@ -4,8 +4,13 @@ import 'package:mecca/features/companies/domain/company.dart';
 import 'package:mecca/features/companies/ui/company_notifier.dart';
 
 class CreateCompanyPage extends StatefulWidget {
-  const CreateCompanyPage({super.key, required this.companyNotifier});
+  const CreateCompanyPage({
+    super.key,
+    required this.companyNotifier,
+    this.company,
+  });
 
+  final Company? company;
   final CompanyNotifier companyNotifier;
 
   @override
@@ -18,6 +23,17 @@ class _CreateCompanyPageState extends State<CreateCompanyPage> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _addressController = TextEditingController();
   final TextEditingController _cityController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.company != null) {
+      _nameController.text = widget.company!.name;
+      _emailController.text = widget.company!.email ?? '';
+      _addressController.text = widget.company!.address ?? '';
+      _cityController.text = widget.company!.city ?? '';
+    }
+  }
 
   @override
   void dispose() {
@@ -33,21 +49,32 @@ class _CreateCompanyPageState extends State<CreateCompanyPage> {
       return;
     }
 
-    final company = Company(
-      id: null,
-      email: _emailController.text.trim(),
-      name: _nameController.text.trim(),
-      address: _addressController.text.trim(),
-      city: _cityController.text.trim(),
-      minutesBalance: 0,
-    );
+    if (widget.company != null) {
+      // Update existing company
+      final updatedCompany = widget.company!.copyWith(
+        email: _emailController.text.trim(),
+        name: _nameController.text.trim(),
+        address: _addressController.text.trim(),
+        city: _cityController.text.trim(),
+      );
+      await widget.companyNotifier.updateCompany(updatedCompany);
+    } else {
+      // Create new company
+      final company = Company(
+        id: null,
+        email: _emailController.text.trim(),
+        name: _nameController.text.trim(),
+        address: _addressController.text.trim(),
+        city: _cityController.text.trim(),
+        minutesBalance: 0,
+      );
 
-    await widget.companyNotifier.createCompany(company);
+      await widget.companyNotifier.createCompany(company);
+    }
 
     if (!mounted) {
       return;
     }
-
     if (widget.companyNotifier.error == null) {
       Navigator.pop(context);
       return;
