@@ -102,145 +102,148 @@ class _CompaniesPageState extends State<CompaniesPage> {
           style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
         ),
       ),
-      body: AnimatedBuilder(
-        animation: widget.companyNotifier,
-        builder: (context, _) {
-          Widget child;
+      body: SafeArea(
+        child: AnimatedBuilder(
+          animation: widget.companyNotifier,
+          builder: (context, _) {
+            Widget child;
 
-          if (widget.companyNotifier.isLoading) {
-            child = const Center(child: CircularProgressIndicator());
-          } else if (widget.companyNotifier.error != null) {
-            child = ErrorMessageWidget(
-              text: widget.companyNotifier.error!,
-              onPressed: widget.companyNotifier.loadCompanies,
-            );
-          } else if (widget.companyNotifier.companies.isEmpty) {
-            child = EmptyScreenWidget(
-              title: 'Todaía no hay empresas agregadas.',
-              gift: 'assets/images/factory.png',
-            );
-          } else {
-            child = ListView.separated(
-              padding: EdgeInsets.symmetric(vertical: 16, horizontal: 12),
-              physics: const AlwaysScrollableScrollPhysics(),
-              itemCount: widget.companyNotifier.companies.length,
-              itemBuilder: (context, index) {
-                final company = widget.companyNotifier.companies[index];
-                return GestureDetector(
-                  onLongPress: () async {
-                    final shouldDelete = await _showCompanyOptions(company);
-                    if (!shouldDelete) return;
-                    await widget.companyNotifier.deleteCompany(company.id!);
+            if (widget.companyNotifier.isLoading) {
+              child = const Center(child: CircularProgressIndicator());
+            } else if (widget.companyNotifier.error != null) {
+              child = ErrorMessageWidget(
+                text: widget.companyNotifier.error!,
+                onPressed: widget.companyNotifier.loadCompanies,
+              );
+            } else if (widget.companyNotifier.companies.isEmpty) {
+              child = EmptyScreenWidget(
+                title: 'Todaía no hay empresas agregadas.',
+                gift: 'assets/images/factory.png',
+              );
+            } else {
+              child = ListView.separated(
+                padding: EdgeInsets.symmetric(vertical: 16, horizontal: 12),
+                physics: const AlwaysScrollableScrollPhysics(),
+                itemCount: widget.companyNotifier.companies.length,
+                itemBuilder: (context, index) {
+                  final company = widget.companyNotifier.companies[index];
+                  return GestureDetector(
+                    onLongPress: () async {
+                      final shouldDelete = await _showCompanyOptions(company);
+                      if (!shouldDelete) return;
+                      await widget.companyNotifier.deleteCompany(company.id!);
 
-                    if (!mounted) return;
-                  },
-                  onTap: () {
-                    final jobNotifier = JobNotifier(companyId: company.id!);
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => JobsPage(
-                          company: company,
-                          jobNotifier: jobNotifier,
-                          companyNotifier: widget.companyNotifier,
-                        ),
-                      ),
-                    );
-                  },
-                  onDoubleTap: () {
-                    if (company.email == null) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Correo inválido o vacío'),
+                      if (!mounted) return;
+                    },
+                    onTap: () {
+                      final jobNotifier = JobNotifier(companyId: company.id!);
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => JobsPage(
+                            company: company,
+                            jobNotifier: jobNotifier,
+                            companyNotifier: widget.companyNotifier,
+                          ),
                         ),
                       );
-                      return;
-                    }
-                    Clipboard.setData(ClipboardData(text: company.email!));
+                    },
+                    onDoubleTap: () {
+                      if (company.email == null) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Correo inválido o vacío'),
+                          ),
+                        );
+                        return;
+                      }
+                      Clipboard.setData(ClipboardData(text: company.email!));
 
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text(
-                          'Correo copiado',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w400,
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text(
+                            'Correo copiado',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w400,
+                            ),
                           ),
                         ),
+                      );
+                    },
+                    child: Container(
+                      padding: EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: AppColors.surface,
+                        borderRadius: BorderRadius.circular(12),
                       ),
-                    );
-                  },
-                  child: Container(
-                    padding: EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: AppColors.surface,
-                      borderRadius: BorderRadius.circular(12),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            company.name,
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 24,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          if (company.email != null &&
+                              company.email!.isNotEmpty)
+                            Text(
+                              'Correo: ${company.email}',
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w400,
+                              ),
+                            ),
+                          if (company.city != null && company.city!.isNotEmpty)
+                            Text(
+                              'Ciudad: ${company.city}',
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w400,
+                              ),
+                            ),
+                          if (company.address != null &&
+                              company.address!.isNotEmpty)
+                            Text(
+                              'Dirección: ${company.address}',
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w400,
+                              ),
+                            ),
+                          Text(
+                            'Balance: ${company.minutesBalance} min',
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w400,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                  );
+                },
+                separatorBuilder: (context, index) => SizedBox(height: 12),
+              );
+            }
+
+            return RefreshIndicator(
+              onRefresh: widget.companyNotifier.refresh,
+              child: child is ListView
+                  ? child
+                  : ListView(
+                      physics: const AlwaysScrollableScrollPhysics(),
                       children: [
-                        Text(
-                          company.name,
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 24,
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        if (company.email != null && company.email!.isNotEmpty)
-                          Text(
-                            'Correo: ${company.email}',
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.w400,
-                            ),
-                          ),
-                        if (company.city != null && company.city!.isNotEmpty)
-                          Text(
-                            'Ciudad: ${company.city}',
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.w400,
-                            ),
-                          ),
-                        if (company.address != null &&
-                            company.address!.isNotEmpty)
-                          Text(
-                            'Dirección: ${company.address}',
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.w400,
-                            ),
-                          ),
-                        Text(
-                          'Balance: ${company.minutesBalance} min',
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.w400,
-                          ),
-                        ),
+                        const SizedBox(height: 240),
+                        Center(child: child),
                       ],
                     ),
-                  ),
-                );
-              },
-              separatorBuilder: (context, index) => SizedBox(height: 12),
             );
-          }
-
-          return RefreshIndicator(
-            onRefresh: widget.companyNotifier.refresh,
-            child: child is ListView
-                ? child
-                : ListView(
-                    physics: const AlwaysScrollableScrollPhysics(),
-                    children: [
-                      const SizedBox(height: 240),
-                      Center(child: child),
-                    ],
-                  ),
-          );
-        },
+          },
+        ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {

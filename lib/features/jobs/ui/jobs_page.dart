@@ -193,169 +193,171 @@ class _JobsPageState extends State<JobsPage> {
           style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
         ),
       ),
-      body: AnimatedBuilder(
-        animation: widget.jobNotifier,
-        builder: (context, _) {
-          if (widget.jobNotifier.isScreenLoading) {
-            return ListView(
-              physics: const AlwaysScrollableScrollPhysics(),
-              children: const [
-                SizedBox(height: 240),
-                Center(child: CircularProgressIndicator()),
-              ],
-            );
-          }
-
-          if (widget.jobNotifier.error != null) {
-            return ErrorMessageWidget(
-              text: widget.jobNotifier.error!,
-              onPressed: widget.jobNotifier.loadJobs,
-            );
-          }
-
-          if (widget.jobNotifier.jobs.isEmpty) {
-            return ListView(
-              padding: EdgeInsets.symmetric(horizontal: 12),
-              physics: const AlwaysScrollableScrollPhysics(),
-              children: [
-                SizedBox(height: 240),
-                Center(
-                  child: EmptyScreenWidget(
-                    title: 'Todavia no hay trabajos generados',
-                    gift: 'assets/images/remote-worker.png',
-                  ),
-                ),
-              ],
-            );
-          }
-
-          return ListView.separated(
-            padding: EdgeInsets.symmetric(vertical: 16, horizontal: 12),
-            physics: const AlwaysScrollableScrollPhysics(),
-            itemCount: widget.jobNotifier.jobs.length,
-            itemBuilder: (context, index) {
-              final job = widget.jobNotifier.jobs[index];
-              final isGeneratingThisJob =
-                  job.id != null && _generatingJobId == job.id;
-              final isAnyPdfGenerating = _generatingJobId != null;
-              final isDeleting =
-                  job.id != null && widget.jobNotifier.isDeleting(job.id!);
-              final isFinalizing =
-                  job.id != null && widget.jobNotifier.isFinalizing(job.id!);
-              return Container(
-                padding: EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: AppColors.surface,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: ListTile(
-                  contentPadding: EdgeInsets.zero,
-                  onTap: job.status == Job.draft
-                      ? () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => CreateJobPage(
-                                company: _company,
-                                jobNotifier: widget.jobNotifier,
-                                initialJob: job,
-                              ),
-                            ),
-                          );
-                        }
-                      : null,
-                  onLongPress: isDeleting
-                      ? null
-                      : job.status == Job.draft
-                      ? () => _handleDelete(job)
-                      : null,
-                  title: Row(
-                    children: [
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            _CustomInputText(text: job.date, title: 'Fecha:'),
-                            _CustomInputText(
-                              title: 'Entrada:',
-                              text: job.startTime,
-                            ),
-                            _CustomInputText(
-                              title: 'Salida:',
-                              text: job.endTime,
-                            ),
-                            _CustomInputText(
-                              title: 'Horas facturadas:',
-                              text: '${job.hoursCharged} h',
-                            ),
-                            _CustomInputText(
-                              title: 'Valor hora:',
-                              text: '${formatCurrency(job.valuePerHour)} \$',
-                            ),
-                            _CustomInputText(
-                              title: 'Total:',
-                              text: '${formatCurrency(job.totalDay)} \$',
-                            ),
-                          ],
-                        ),
-                      ),
-                      job.status == Job.draft
-                          ? TextButton(
-                              onPressed: isFinalizing
-                                  ? null
-                                  : () => _handleFinalize(job),
-                              child: isFinalizing
-                                  ? const SizedBox(
-                                      height: 16,
-                                      width: 16,
-                                      child: CircularProgressIndicator(
-                                        strokeWidth: 2,
-                                      ),
-                                    )
-                                  : const Text(
-                                      'Finalizar',
-                                      style: TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.w400,
-                                      ),
-                                    ),
-                            )
-                          : job.status == Job.finalized
-                          ? TextButton(
-                              onPressed: isAnyPdfGenerating
-                                  ? null
-                                  : () => _generateAndPreviewPdf(job),
-                              child: isGeneratingThisJob
-                                  ? const SizedBox(
-                                      height: 16,
-                                      width: 16,
-                                      child: CircularProgressIndicator(
-                                        strokeWidth: 2,
-                                      ),
-                                    )
-                                  : const Text(
-                                      'PDF',
-                                      style: TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                            )
-                          : Text(
-                              job.status,
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.w400,
-                              ),
-                            ),
-                    ],
-                  ),
-                ),
+      body: SafeArea(
+        child: AnimatedBuilder(
+          animation: widget.jobNotifier,
+          builder: (context, _) {
+            if (widget.jobNotifier.isScreenLoading) {
+              return ListView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                children: const [
+                  SizedBox(height: 240),
+                  Center(child: CircularProgressIndicator()),
+                ],
               );
-            },
-            separatorBuilder: (context, index) => SizedBox(height: 12),
-          );
-        },
+            }
+
+            if (widget.jobNotifier.error != null) {
+              return ErrorMessageWidget(
+                text: widget.jobNotifier.error!,
+                onPressed: widget.jobNotifier.loadJobs,
+              );
+            }
+
+            if (widget.jobNotifier.jobs.isEmpty) {
+              return ListView(
+                padding: EdgeInsets.symmetric(horizontal: 12),
+                physics: const AlwaysScrollableScrollPhysics(),
+                children: [
+                  SizedBox(height: 240),
+                  Center(
+                    child: EmptyScreenWidget(
+                      title: 'Todavia no hay trabajos generados',
+                      gift: 'assets/images/remote-worker.png',
+                    ),
+                  ),
+                ],
+              );
+            }
+
+            return ListView.separated(
+              padding: EdgeInsets.symmetric(vertical: 16, horizontal: 12),
+              physics: const AlwaysScrollableScrollPhysics(),
+              itemCount: widget.jobNotifier.jobs.length,
+              itemBuilder: (context, index) {
+                final job = widget.jobNotifier.jobs[index];
+                final isGeneratingThisJob =
+                    job.id != null && _generatingJobId == job.id;
+                final isAnyPdfGenerating = _generatingJobId != null;
+                final isDeleting =
+                    job.id != null && widget.jobNotifier.isDeleting(job.id!);
+                final isFinalizing =
+                    job.id != null && widget.jobNotifier.isFinalizing(job.id!);
+                return Container(
+                  padding: EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: AppColors.surface,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    onTap: job.status == Job.draft
+                        ? () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => CreateJobPage(
+                                  company: _company,
+                                  jobNotifier: widget.jobNotifier,
+                                  initialJob: job,
+                                ),
+                              ),
+                            );
+                          }
+                        : null,
+                    onLongPress: isDeleting
+                        ? null
+                        : job.status == Job.draft
+                        ? () => _handleDelete(job)
+                        : null,
+                    title: Row(
+                      children: [
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              _CustomInputText(text: job.date, title: 'Fecha:'),
+                              _CustomInputText(
+                                title: 'Entrada:',
+                                text: job.startTime,
+                              ),
+                              _CustomInputText(
+                                title: 'Salida:',
+                                text: job.endTime,
+                              ),
+                              _CustomInputText(
+                                title: 'Horas facturadas:',
+                                text: '${job.hoursCharged} h',
+                              ),
+                              _CustomInputText(
+                                title: 'Valor hora:',
+                                text: '${formatCurrency(job.valuePerHour)} \$',
+                              ),
+                              _CustomInputText(
+                                title: 'Total:',
+                                text: '${formatCurrency(job.totalDay)} \$',
+                              ),
+                            ],
+                          ),
+                        ),
+                        job.status == Job.draft
+                            ? TextButton(
+                                onPressed: isFinalizing
+                                    ? null
+                                    : () => _handleFinalize(job),
+                                child: isFinalizing
+                                    ? const SizedBox(
+                                        height: 16,
+                                        width: 16,
+                                        child: CircularProgressIndicator(
+                                          strokeWidth: 2,
+                                        ),
+                                      )
+                                    : const Text(
+                                        'Finalizar',
+                                        style: TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.w400,
+                                        ),
+                                      ),
+                              )
+                            : job.status == Job.finalized
+                            ? TextButton(
+                                onPressed: isAnyPdfGenerating
+                                    ? null
+                                    : () => _generateAndPreviewPdf(job),
+                                child: isGeneratingThisJob
+                                    ? const SizedBox(
+                                        height: 16,
+                                        width: 16,
+                                        child: CircularProgressIndicator(
+                                          strokeWidth: 2,
+                                        ),
+                                      )
+                                    : const Text(
+                                        'PDF',
+                                        style: TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                              )
+                            : Text(
+                                job.status,
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w400,
+                                ),
+                              ),
+                      ],
+                    ),
+                  ),
+                );
+              },
+              separatorBuilder: (context, index) => SizedBox(height: 12),
+            );
+          },
+        ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
