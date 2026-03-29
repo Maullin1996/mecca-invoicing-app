@@ -3,7 +3,7 @@
 Aplicación móvil utilizada en operación real para gestionar procesos productivos y control de inventario.
 
 ## 🚀 Demo
-[Video demo aquí]
+[![Video demo](https://img.youtube.com/vi/aWagRheKt2I/hqdefault.jpg)](https://youtube.com/shorts/aWagRheKt2I)
 
 ## 🧩 Problema
 
