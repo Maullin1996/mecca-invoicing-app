@@ -3,7 +3,7 @@
 Aplicación móvil para gestionar servicios, costos y generar reportes profesionales en PDF. Pensada para freelancers y trabajadores independientes que necesitan llevar control claro por cliente, sin depender de conexión ni backend.
 
 ## 🚀 Demo
-[![Video demo](https://img.youtube.com/vi/aWagRheKt2I/hqdefault.jpg)](https://youtube.com/shorts/aWagRheKt2I)
+[![Video demo](https://img.youtube.com/vi/8Q86RFpOHBo/hqdefault.jpg)](https://youtube.com/shorts/8Q86RFpOHBo)
 
 ## 🧩 Problema
 
